@@ -5,6 +5,7 @@ import { User } from '../models/user.model.ts';
 import { hashPassword, comparePasswords } from '../utils/password.ts';
 import { signJwt } from '../utils/jwt.ts';
 import omitFields from '../utils/omitfields.ts';
+import config from '../config/default.ts';
 
 const signUpUserController = async ({
   request,
@@ -81,12 +82,12 @@ const loginUserController = async ({
 
     const token = await signJwt({
       userId: String(userExists._id),
-      expiresIn: 30,
-      secretKey: 'Hello',
+      expiresIn: config.jwtExpiresIn,
+      secretKey: config.jwtSecret,
     });
     cookies.set('token', token, {
-      expires: new Date(Date.now() + 30 * 60 * 1000),
-      maxAge: 30 * 60,
+      expires: new Date(Date.now() + config.jwtExpiresIn * 60 * 1000),
+      maxAge: config.jwtExpiresIn * 60,
       httpOnly: true,
       secure: false,
     });
