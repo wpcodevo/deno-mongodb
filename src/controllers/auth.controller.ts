@@ -85,7 +85,8 @@ const loginUserController = async ({
       secretKey: 'Hello',
     });
     cookies.set('token', token, {
-      expires: new Date(Date.now() + 30 * 60 * 60 * 1000),
+      expires: new Date(Date.now() + 30 * 60 * 1000),
+      maxAge: 30 * 60,
       httpOnly: true,
       secure: false,
     });
