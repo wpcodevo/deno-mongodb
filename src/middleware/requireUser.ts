@@ -2,6 +2,7 @@ import { User } from '../models/user.model.ts';
 import { ObjectId } from '../deps.ts';
 import type { Context } from '../deps.ts';
 import { verifyJwt } from '../utils/jwt.ts';
+import config from '../config/default.ts';
 
 const requireUser = async (ctx: Context, next: () => Promise<unknown>) => {
   try {
@@ -25,7 +26,7 @@ const requireUser = async (ctx: Context, next: () => Promise<unknown>) => {
       return;
     }
 
-    const decoded = await verifyJwt(token, 'Hello');
+    const decoded = await verifyJwt(token, config.jwtSecret);
 
     const userExists = await User.findOne({ _id: new ObjectId(decoded.sub) });
 
