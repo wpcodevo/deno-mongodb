@@ -101,12 +101,7 @@ const loginUserController = async ({
   }
 };
 
-const logoutController = ({
-  state,
-  response,
-  cookies,
-}: RouterContext<string>) => {
-  console.log(state.userId);
+const logoutController = ({ response, cookies }: RouterContext<string>) => {
   cookies.set('token', '', {
     httpOnly: true,
     secure: false,
