@@ -56,6 +56,7 @@ const signUpUserController = async ({
     return;
   }
 };
+
 const loginUserController = async ({
   request,
   response,
