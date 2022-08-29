@@ -80,18 +80,22 @@ const updatePostController = async ({
   try {
     const payload: UpdatePostInput['body'] = await request.body().value;
 
-    const updatedPostId = await Post.updateOne(
+    const updatedInfo = await Post.updateOne(
       { _id: new Bson.ObjectId(params.postId) },
-      { ...payload, updatedAt: new Date() }
+      { $set: { ...payload, updatedAt: new Date() } },
+      { ignoreUndefined: true }
     );
 
-    if (!updatedPostId) {
-      response.status = 500;
-      response.body = { status: 'error', message: 'Error creating user' };
+    if (!updatedInfo.matchedCount) {
+      response.status = 404;
+      response.body = {
+        status: 'fail',
+        message: 'No post with that Id exists',
+      };
       return;
     }
 
-    const updatedPost = await Post.findOne({ _id: updatedPostId });
+    const updatedPost = await Post.findOne({ _id: updatedInfo.upsertedId });
 
     response.status = 200;
     response.body = {
@@ -118,6 +122,7 @@ const findPostController = async ({
         status: 'success',
         message: 'No post with that Id exists',
       };
+      return;
     }
 
     response.status = 200;
@@ -187,20 +192,16 @@ const deletePostController = async ({
       _id: new Bson.ObjectId(params.postId),
     });
 
-    console.log('Deleted: ' + numberOfPost + ' post');
-
     if (!numberOfPost) {
       response.status = 404;
       response.body = {
         status: 'success',
         message: 'No post with that Id exists',
       };
+      return;
     }
 
     response.status = 204;
-    response.body = {
-      status: 'success',
-    };
   } catch (error) {
     response.status = 500;
     response.body = { status: 'error', message: error.message };
