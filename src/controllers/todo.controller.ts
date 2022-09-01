@@ -7,19 +7,18 @@ import type {
 } from '../schema/todo.schema.ts';
 
 const createTodoController = async ({
-  state,
   request,
   response,
 }: RouterContext<string>) => {
   try {
     const { title, content, status }: CreateTodoInput =
       await request.body().value;
-    const postExists = await Todo.findOne({ title });
-    if (postExists) {
+    const totoExists = await Todo.findOne({ title });
+    if (totoExists) {
       response.status = 409;
       response.body = {
         status: 'fail',
-        message: 'Post with that title already exists',
+        message: 'Todo with that title already exists',
       };
       return;
     }
@@ -27,7 +26,7 @@ const createTodoController = async ({
     const createdAt = new Date();
     const updatedAt = createdAt;
 
-    const postId: string | Bson.ObjectId = await Todo.insertOne({
+    const todoId: string | Bson.ObjectId = await Todo.insertOne({
       title,
       content,
       status,
@@ -35,33 +34,18 @@ const createTodoController = async ({
       updatedAt,
     });
 
-    if (!postId) {
+    if (!todoId) {
       response.status = 500;
       response.body = { status: 'error', message: 'Error creating user' };
       return;
     }
 
-    const pipeline = [
-      { $match: { _id: postId } },
-      {
-        $lookup: {
-          from: 'users',
-          localField: 'user',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      { $unwind: '$user' },
-    ];
-
-    const cursor = Todo.aggregate(pipeline);
-    const cursorPosts = cursor.map((post) => post);
-    const posts = await cursorPosts;
+    const todo = await Todo.findOne({_id: todoId})
 
     response.status = 201;
     response.body = {
       status: 'success',
-      data: { post: posts[0] },
+      data: { todo },
     };
   } catch (error) {
     response.status = 500;
@@ -79,7 +63,7 @@ const updateTodoController = async ({
     const payload: UpdateTodoInput['body'] = await request.body().value;
 
     const updatedInfo = await Todo.updateOne(
-      { _id: new Bson.ObjectId(params.postId) },
+      { _id: new Bson.ObjectId(params.todoId) },
       { $set: { ...payload, updatedAt: new Date() } },
       { ignoreUndefined: true }
     );
@@ -88,7 +72,7 @@ const updateTodoController = async ({
       response.status = 404;
       response.body = {
         status: 'fail',
-        message: 'No post with that Id exists',
+        message: 'No todo with that Id exists',
       };
       return;
     }
@@ -98,7 +82,7 @@ const updateTodoController = async ({
     response.status = 200;
     response.body = {
       status: 'success',
-      data: { updatedTodo },
+      data: { todo: updatedTodo },
     };
   } catch (error) {
     response.status = 500;
@@ -148,15 +132,6 @@ const findAllTodosController = async ({
     const pipeline = [
       { $match: {} },
       {
-        $lookup: {
-          from: 'users',
-          localField: 'user',
-          foreignField: '_id',
-          as: 'user',
-        },
-      },
-      { $unwind: '$user' },
-      {
         $skip: skip,
       },
       {
@@ -165,14 +140,14 @@ const findAllTodosController = async ({
     ];
 
     const cursor = Todo.aggregate(pipeline);
-    const cursorTodos = cursor.map((post) => post);
-    const posts = await cursorTodos;
+    const cursorTodos = cursor.map((todo) => todo);
+    const todos = await cursorTodos;
 
     response.status = 200;
     response.body = {
       status: 'success',
-      results: posts.length,
-      data: { posts },
+      results: todos.length,
+      data: { todos },
     };
   } catch (error) {
     response.status = 500;
@@ -194,7 +169,7 @@ const deleteTodoController = async ({
       response.status = 404;
       response.body = {
         status: 'success',
-        message: 'No post with that Id exists',
+        message: 'No todo with that Id exists',
       };
       return;
     }
