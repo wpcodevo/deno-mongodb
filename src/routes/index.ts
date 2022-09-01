@@ -1,8 +1,8 @@
 import { Application } from '../deps.ts';
-import postRouter from './todo.routes.ts';
+import todoRouter from './todo.routes.ts';
 
 function init(app: Application) {
-  app.use(postRouter.prefix('/api/posts/').routes());
+  app.use(todoRouter.prefix('/api/todos/').routes());
 }
 
 export default {
