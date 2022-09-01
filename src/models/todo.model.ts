@@ -1,12 +1,13 @@
 import { db } from '../utils/connectDB.ts';
 import { ObjectId } from '../deps.ts';
 
-interface UserSchema {
+export interface TodoSchema {
   _id?: ObjectId;
-  name: string;
-  email: string;
+  title: string;
+  content: string;
+  status: string;
   createdAt: Date;
   updatedAt: Date;
 }
 
-export const User = db.collection<UserSchema>('users');
+export const Todo = db.collection<TodoSchema>('todos');
