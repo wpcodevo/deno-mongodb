@@ -1,6 +1,7 @@
 import { Router } from '../deps.ts';
 import todoController from '../controllers/todo.controller.ts';
 import { createTodoSchema, updateTodoSchema } from '../schema/todo.schema.ts'
+import validate from "../middleware/validate.ts"
 
 
 const router = new Router();

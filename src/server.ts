@@ -1,7 +1,6 @@
 import { Application, Router, Bson } from './deps.ts';
 import type { RouterContext } from './deps.ts';
 import config from './config/default.ts';
-import {User} from "./models/user.model.ts"
 
 const app = new Application();
 
