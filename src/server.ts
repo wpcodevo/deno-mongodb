@@ -1,13 +1,13 @@
 import { Application, Router } from './deps.ts';
 import type { RouterContext } from './deps.ts';
 import config from './config/default.ts';
-import appRouter from './routes/index.ts';
+import appRouter from './routes/index.ts'
 
 const app = new Application();
 
-const router = new Router();
+const router = new Router(); // Create router
 
-// Logger
+// Middleware Logger
 app.use(async (ctx, next) => {
   await next();
   const rt = ctx.response.headers.get("X-Response-Time");
@@ -15,6 +15,7 @@ app.use(async (ctx, next) => {
 });
 
 
+// Test the API
 router.get<string>('/api/healthchecker', (ctx: RouterContext<string>) => {
   ctx.response.body = {
     status: "success",
@@ -22,9 +23,10 @@ router.get<string>('/api/healthchecker', (ctx: RouterContext<string>) => {
   };
 });
 
-appRouter.init(app);
-app.use(router.routes());
-app.use(router.allowedMethods());
+// 👇 Evoke the routers here
+appRouter.init(app)
+app.use(router.routes()); // Implement our router
+app.use(router.allowedMethods()); // Allow router HTTP methods
 
 app.addEventListener('listen', ({ port, secure }) => {
   console.log(

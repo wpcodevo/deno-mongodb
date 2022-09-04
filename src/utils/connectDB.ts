@@ -1,8 +1,7 @@
 import { MongoClient } from '../deps.ts';
 import config from '../config/default.ts';
 
-const dbUri = config.dbUri;
-const dbName = Deno.env.get('MONGO_INITDB_DATABASE') as string;
+const {dbUri, dbName} = config
 
 const client: MongoClient = new MongoClient();
 await client.connect(dbUri);
