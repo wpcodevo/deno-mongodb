@@ -1,4 +1,4 @@
-import { Application, Router } from './deps.ts';
+import { Application, Router, Bson } from './deps.ts';
 import type { RouterContext } from './deps.ts';
 import config from './config/default.ts';
 import { User } from './models/user.model.ts';
@@ -9,14 +9,18 @@ const router = new Router();
 
 // Health checker
 router.get<string>('/api/healthchecker', (ctx: RouterContext<string>) => {
-  ctx.response.body = 'Hello World!';
+  ctx.response.status = 200
+  ctx.response.body = {
+    status: "success",
+    message: "Welcome to Deno with MongoDB"
+  }
 });
 
 // Create a new user
 router.post<string>('/api/users', async(ctx: RouterContext<string>)=> {
 try {
-  const {name, email}:{name: string, email: string} = ctx.request.body()
-  const userId = await User.insertOne({name,email})
+  const {name, email}:{name: string, email: string} = await ctx.request.body().value
+  const userId: string | Bson.ObjectId = await User.insertOne({name,email})
 
   if(!userId){
     ctx.response.status = 500;
