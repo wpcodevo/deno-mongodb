@@ -54,6 +54,7 @@ const createPostController = async ({
         },
       },
       { $unwind: '$user' },
+      {$unset: ["user.password", "user.verified","user.createdAt", "user.updatedAt"]}
     ];
 
     const posts = await Post.aggregate(pipeline).toArray();
@@ -162,6 +163,7 @@ const findAllPostsController = async ({
       {
         $limit: intLimit,
       },
+      {$unset: ["user.password", "user.verified","user.createdAt", "user.updatedAt"]}
     ];
 
     const posts = await Post.aggregate(pipeline).toArray();
