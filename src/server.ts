@@ -57,5 +57,5 @@ app.addEventListener('listen', ({ port, secure }) => {
   );
 });
 
-const port = config.port;
+const port = config.serverPort;
 app.listen({ port });

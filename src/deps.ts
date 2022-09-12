@@ -6,4 +6,4 @@ export {
   MongoClient,
   Bson,
   ObjectId,
-} from 'https://deno.land/x/mongo@v0.30.1/mod.ts';
+} from 'https://deno.land/x/mongo@v0.31.1/mod.ts';
