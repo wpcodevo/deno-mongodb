@@ -4,11 +4,15 @@ import config from "./config/default.ts";
 import appRouter from "./routes/index.ts";
 
 const app = new Application();
-
 const router = new Router();
 
-router.get<string>("/api/healthchecker", (ctx: RouterContext<string>) => {
-  ctx.response.body = "Hello World!";
+// Health checker
+router.get<string>('/api/healthchecker', (ctx: RouterContext<string>) => {
+  ctx.response.status = 200
+  ctx.response.body = {
+    status: "success",
+    message: "Welcome to Deno with MongoDB"
+  }
 });
 
 appRouter.init(app);
