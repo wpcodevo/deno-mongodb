@@ -18,9 +18,8 @@ const getMeController = async ({ state, response }: RouterContext<string>) => {
     response.status = 200;
     response.body = {
       status: 'success',
-      data: {
-        user: omitFields(user, 'password', 'verified'),
-      },
+      user: omitFields(user, 'password', 'verified'),
+     
     };
   } catch (error) {
     response.status = 500;

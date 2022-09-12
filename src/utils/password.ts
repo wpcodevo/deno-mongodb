@@ -1,4 +1,4 @@
-import { hash, genSalt, compare } from '../deps.ts';
+import { compare, genSalt, hash } from "../deps.ts";
 
 export async function hashPassword(password: string): Promise<string> {
   const salt = await genSalt(12);
@@ -7,7 +7,7 @@ export async function hashPassword(password: string): Promise<string> {
 
 export function comparePasswords(
   candidatePassword: string,
-  hashedPassword: string
+  hashedPassword: string,
 ): Promise<boolean> {
   return compare(candidatePassword, hashedPassword);
 }

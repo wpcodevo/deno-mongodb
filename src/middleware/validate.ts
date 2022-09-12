@@ -1,4 +1,4 @@
-import { z, RouterContext, helpers } from '../deps.ts';
+import { helpers, RouterContext, z } from "../deps.ts";
 
 const validate =
   (schema: z.AnyZodObject) =>
@@ -11,11 +11,11 @@ const validate =
       });
 
       await next();
-    } catch (err: any) {
+    } catch (err) {
       if (err instanceof z.ZodError) {
         ctx.response.status = 400;
         ctx.response.body = {
-          status: 'fail',
+          status: "fail",
           error: err.errors,
         };
         return;

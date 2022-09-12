@@ -1,5 +1,5 @@
-import { db } from '../utils/connectDB.ts';
-import { ObjectId } from '../deps.ts';
+import { db } from "../utils/connectDB.ts";
+import { ObjectId } from "../deps.ts";
 
 interface UserSchema {
   _id?: ObjectId;
@@ -12,4 +12,4 @@ interface UserSchema {
   updatedAt: Date;
 }
 
-export const User = db.collection<UserSchema>('users');
+export const User = db.collection<UserSchema>("users");

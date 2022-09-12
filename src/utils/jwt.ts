@@ -1,15 +1,15 @@
-import { create, verify, Header, Payload, getNumericDate } from '../deps.ts';
+import { create, getNumericDate, Header, Payload, verify } from "../deps.ts";
 
 const encoder = new TextEncoder();
 
 async function generateKey(secretKey: string) {
   const keyBuf = encoder.encode(secretKey);
   return await crypto.subtle.importKey(
-    'raw',
+    "raw",
     keyBuf,
-    { name: 'HMAC', hash: 'SHA-256' },
+    { name: "HMAC", hash: "SHA-256" },
     true,
-    ['sign', 'verify']
+    ["sign", "verify"],
   );
 }
 
@@ -23,7 +23,7 @@ export async function signJwt({
   secretKey: string;
 }) {
   const payload: Payload = {
-    iss: 'admin.com',
+    iss: "admin.com",
     sub: userId,
     exp: getNumericDate(expiresIn * 60),
     iat: getNumericDate(new Date()),
@@ -31,7 +31,7 @@ export async function signJwt({
   };
 
   const header: Header = {
-    alg: 'HS256',
+    alg: "HS256",
   };
 
   const key = await generateKey(secretKey);
