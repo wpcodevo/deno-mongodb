@@ -11,7 +11,7 @@ const validate =
       });
 
       await next();
-    } catch (err: any) {
+    } catch (err) {
       if (err instanceof z.ZodError) {
         ctx.response.status = 400;
         ctx.response.body = {
