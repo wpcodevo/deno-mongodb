@@ -56,14 +56,12 @@ const createPostController = async ({
       { $unwind: '$user' },
     ];
 
-    const cursor = Post.aggregate(pipeline);
-    const cursorPosts = cursor.map((post) => post);
-    const posts = await cursorPosts;
+    const posts = await Post.aggregate(pipeline).toArray();
 
     response.status = 201;
     response.body = {
       status: 'success',
-      data: { post: posts[0] },
+       post: posts[0],
     };
   } catch (error) {
     response.status = 500;
@@ -100,7 +98,7 @@ const updatePostController = async ({
     response.status = 200;
     response.body = {
       status: 'success',
-      data: { updatedPost },
+      post: updatedPost ,
     };
   } catch (error) {
     response.status = 500;
@@ -128,7 +126,7 @@ const findPostController = async ({
     response.status = 200;
     response.body = {
       status: 'success',
-      data: { post },
+       post,
     };
   } catch (error) {
     response.status = 500;
@@ -166,15 +164,13 @@ const findAllPostsController = async ({
       },
     ];
 
-    const cursor = Post.aggregate(pipeline);
-    const cursorPosts = cursor.map((post) => post);
-    const posts = await cursorPosts;
+    const posts = await Post.aggregate(pipeline).toArray();
 
     response.status = 200;
     response.body = {
       status: 'success',
       results: posts.length,
-      data: { posts },
+      posts,
     };
   } catch (error) {
     response.status = 500;

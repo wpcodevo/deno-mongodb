@@ -49,7 +49,7 @@ const signUpUserController = async ({
     response.status = 201;
     response.body = {
       status: 'success',
-      data: { user: omitFields(user, 'password', 'verified') },
+      user: omitFields(user, 'password', 'verified'),
     };
   } catch (error) {
     response.status = 500;
