@@ -1,4 +1,4 @@
-import { Application, Router } from "./deps.ts";
+import { Application, Router, oakCors } from "./deps.ts";
 import type { RouterContext } from "./deps.ts";
 import config from "./config/default.ts";
 import appRouter from "./routes/index.ts";
@@ -15,12 +15,16 @@ router.get<string>('/api/healthchecker', (ctx: RouterContext<string>) => {
   }
 });
 
+app.use(oakCors({
+    origin: /^.+localhost:(3000|3001)$/,
+    optionsSuccessStatus: 200,
+  }))
 appRouter.init(app);
 app.use(router.routes());
 app.use(router.allowedMethods());
 
 app.addEventListener("listen", ({ port, secure }) => {
-  console.log(
+  console.info(
     `🚀 Server started on ${secure ? "https://" : "http://"}localhost:${port}`,
   );
 });

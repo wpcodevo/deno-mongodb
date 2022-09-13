@@ -13,3 +13,4 @@ interface UserSchema {
 }
 
 export const User = db.collection<UserSchema>("users");
+User.createIndexes({indexes:[{name: "unique_email", key: {"email": 1}, unique: true}]})
