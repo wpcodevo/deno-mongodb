@@ -13,3 +13,4 @@ export interface PostSchema {
 }
 
 export const Post = db.collection<PostSchema>('posts');
+Post.createIndexes({indexes:[{name: "unique_title", key: {"title": 1}, unique: true}]})

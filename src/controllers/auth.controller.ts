@@ -14,15 +14,6 @@ const signUpUserController = async ({
   try {
     const { name, email, password }: CreateUserInput = await request.body()
       .value;
-    const userExists = await User.findOne({ email });
-    if (userExists) {
-      response.status = 409;
-      response.body = {
-        status: 'fail',
-        message: 'User with that email already exists',
-      };
-      return;
-    }
 
     const hashedPassword = await hashPassword(password);
     const createdAt = new Date();
@@ -52,6 +43,11 @@ const signUpUserController = async ({
       user: omitFields(user, 'password', 'verified'),
     };
   } catch (error) {
+    if((error.message as string).includes("E11000")){
+      response.status = 409;
+      response.body = { status: "fail", message: "A user with that email already exists" };
+      return;
+    }
     response.status = 500;
     response.body = { status: 'error', message: error.message };
     return;

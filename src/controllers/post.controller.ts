@@ -14,15 +14,6 @@ const createPostController = async ({
   try {
     const { title, category, content, image }: CreatePostInput =
       await request.body().value;
-    const postExists = await Post.findOne({ title });
-    if (postExists) {
-      response.status = 409;
-      response.body = {
-        status: 'fail',
-        message: 'Post with that title already exists',
-      };
-      return;
-    }
 
     const createdAt = new Date();
     const updatedAt = createdAt;
@@ -65,6 +56,11 @@ const createPostController = async ({
        post: posts[0],
     };
   } catch (error) {
+    if((error.message as string).includes("E11000")){
+      response.status = 409;
+      response.body = { status: "fail", message: "Post with that title already exists" };
+      return;
+    }
     response.status = 500;
     response.body = { status: 'error', message: error.message };
     return;
