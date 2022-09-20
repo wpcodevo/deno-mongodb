@@ -11,7 +11,10 @@
 ### 3. Authentication with Bcrypt, JWT, and Cookies in Deno
 
 [Authentication with Bcrypt, JWT, and Cookies in Deno](https://codevoweb.com/authentication-with-bcrypt-jwt-and-cookies-in-deno)
+<<<<<<< HEAD
 
 ### 4. Build a Complete Deno CRUD RESTful API with MongoDB
 
 [Build a Complete Deno CRUD RESTful API with MongoDB](https://codevoweb.com/deno-crud-restful-api-with-mongodb)
+=======
+>>>>>>> 866a4ba70beddea45dc078bee5ce3ceff319b7bc
