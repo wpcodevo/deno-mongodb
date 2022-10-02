@@ -1,8 +1,8 @@
 # How to Set up Deno RESTful CRUD Project with MongoDB
 
-![How to Set up Deno RESTful CRUD Project with MongoDB](https://codevoweb.com/wp-content/uploads/2022/09/How-to-Set-up-Deno-RESTful-CRUD-Project-with-MongoDB.webp)
-
 In this article, you will learn how to set up a Deno CRUD API project that runs on an Oak middleware server and uses a MongoDB database. If you are familiar with Node.js then getting up and running with Deno won't be that difficult.
+
+![How to Set up Deno RESTful CRUD Project with MongoDB](https://codevoweb.com/wp-content/uploads/2022/09/How-to-Set-up-Deno-RESTful-CRUD-Project-with-MongoDB.webp)
 
 ## Topics Covered
 
