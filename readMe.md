@@ -1,4 +1,21 @@
-# RESTful API with Deno, Oak, and MongoDB
+# How to Set up Deno RESTful CRUD Project with MongoDB
+
+![How to Set up Deno RESTful CRUD Project with MongoDB](https://codevoweb.com/wp-content/uploads/2022/09/How-to-Set-up-Deno-RESTful-CRUD-Project-with-MongoDB.webp)
+
+In this article, you will learn how to set up a Deno CRUD API project that runs on an Oak middleware server and uses a MongoDB database. If you are familiar with Node.js then getting up and running with Deno won't be that difficult.
+
+## Topics Covered
+
+- Set up and install Deno
+- Create the Deno Server with Oak Middleware
+- Setup the MongoDB Server with Docker
+- Create the Database Model
+- Add the Route to the Server
+- Test the API Endpoints
+
+Read the entire article here: [https://codevoweb.com/setup-deno-restful-crud-project-with-mongodb](https://codevoweb.com/setup-deno-restful-crud-project-with-mongodb)
+
+Articles in this Series:
 
 ### 1. How to Setup and Use MongoDB with Deno
 
