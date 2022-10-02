@@ -1,8 +1,8 @@
 #  Authentication with Bcrypt, JWT, and Cookies in Deno
 
-![ Authentication with Bcrypt, JWT, and Cookies in Deno](https://codevoweb.com/wp-content/uploads/2022/09/Authentication-with-Bcrypt-JWT-and-Cookies-in-Deno.webp)
-
 To demonstrate how JWT authentication works in Deno, we'll build an API that runs on an Oak middleware server and uses a MongoDB database. Then, we'll add an authentication guard where only users with a valid JSON Web Token will be able to access the protected routes. Also, we'll make the passwords secure by hashing them with the Bcrypt library.
+
+![ Authentication with Bcrypt, JWT, and Cookies in Deno](https://codevoweb.com/wp-content/uploads/2022/09/Authentication-with-Bcrypt-JWT-and-Cookies-in-Deno.webp)
 
 ## Topics Covered
 
