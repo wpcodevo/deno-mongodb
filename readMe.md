@@ -1,8 +1,8 @@
 # How to Setup and Use MongoDB with Deno
 
-![How to Setup and Use MongoDB with Deno](https://codevoweb.com/wp-content/uploads/2022/09/How-to-Setup-and-Use-MongoDB-with-Deno.webp)
-
 When it comes to learning a new framework or language, the first thing that comes to our mind is creating a Todo app that has all the basic CRUD functionalities. So in this article, we will create a Todo CRUD RESTful API in a Deno environment that runs on an Oak middleware server and uses a MongoDB database.
+
+![How to Setup and Use MongoDB with Deno](https://codevoweb.com/wp-content/uploads/2022/09/How-to-Setup-and-Use-MongoDB-with-Deno.webp)
 
 ## Topics Covered
 
