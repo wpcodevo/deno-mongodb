@@ -1,8 +1,8 @@
 #  Build a Complete Deno CRUD RESTful API with MongoDB
 
-![Build a Complete Deno CRUD RESTful API with MongoDB](https://codevoweb.com/wp-content/uploads/2022/09/Build-a-Complete-Deno-CRUD-RESTful-API-with-MongoDB.webp)
-
 In this tutorial, we'll cover how to build a Deno API that supports CRUD operations and stores data in a MongoDB database. The example API will run on an Oak middleware framework that will include routes to create, retrieve, update, and delete documents in the database.
+
+![Build a Complete Deno CRUD RESTful API with MongoDB](https://codevoweb.com/wp-content/uploads/2022/09/Build-a-Complete-Deno-CRUD-RESTful-API-with-MongoDB.webp)
 
 ## Topics Covered
 
