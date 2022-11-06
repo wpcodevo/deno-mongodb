@@ -3,13 +3,21 @@ import { getNumericDate, create, verify } from "../deps.ts";
 import type { Payload, Header } from "../deps.ts";
 import { convertToCryptoKey } from "./convertCryptoKey.ts";
 
+type TokenMetaData = {
+  user_id: string;
+  tokenUUID: string;
+  tokenExpiresIn: Date;
+};
+
 export const signJwt = async ({
   user_id,
+  token_uuid,
   issuer,
   base64PrivateKeyPem,
   expiresIn,
 }: {
   user_id: string;
+  token_uuid: string;
   issuer: string;
   base64PrivateKeyPem: "accessTokenPrivateKey" | "refreshTokenPrivateKey";
   expiresIn: Date;
@@ -20,12 +28,14 @@ export const signJwt = async ({
   };
 
   const nowInSeconds = Math.floor(Date.now() / 1000);
+  const tokenExpiresIn = getNumericDate(expiresIn);
 
   const payload: Payload = {
     iss: issuer,
     iat: nowInSeconds,
-    exp: getNumericDate(expiresIn),
+    exp: tokenExpiresIn,
     sub: user_id,
+    token_uuid,
   };
 
   const crytoPrivateKey = await convertToCryptoKey({
@@ -33,7 +43,9 @@ export const signJwt = async ({
     type: "PRIVATE",
   });
 
-  return create(header, payload, crytoPrivateKey!);
+  const token = await create(header, payload, crytoPrivateKey!);
+
+  return { token, token_uuid };
 };
 
 export const verifyJwt = async <T>({

@@ -28,3 +28,5 @@ export {
   ObjectId,
 } from "https://deno.land/x/mongo@v0.31.1/mod.ts";
 export { oakCors } from "https://deno.land/x/cors@v1.2.2/mod.ts";
+export { connect } from "https://deno.land/x/redis@v0.27.3/mod.ts";
+export { generate as generateUUID } from "https://deno.land/std@0.144.0/uuid/v5.ts";
