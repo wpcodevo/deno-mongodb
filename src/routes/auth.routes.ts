@@ -9,14 +9,16 @@ const router = new Router();
 router.post<string>(
   "/register",
   validate(createUserSchema),
-  authController.signUpUserController,
+  authController.signUpUserController
 );
 router.post<string>(
   "/login",
   validate(loginUserSchema),
-  authController.loginUserController,
+  authController.loginUserController
 );
 
 router.get<string>("/logout", requireUser, authController.logoutController);
+
+router.get<string>("/refresh", authController.refreshAccessTokenController);
 
 export default router;

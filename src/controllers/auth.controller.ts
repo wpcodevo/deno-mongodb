@@ -1,9 +1,9 @@
-import type { RouterContext } from "../deps.ts";
+import { ObjectId, RouterContext } from "../deps.ts";
 import { Bson } from "../deps.ts";
 import type { CreateUserInput, LoginUserInput } from "../schema/user.schema.ts";
 import { User } from "../models/user.model.ts";
 import { comparePasswords, hashPassword } from "../utils/password.ts";
-import { signJwt } from "../utils/jwt.ts";
+import { signJwt, verifyJwt } from "../utils/jwt.ts";
 import omitFields from "../utils/omitfields.ts";
 import config from "../config/default.ts";
 
@@ -44,9 +44,12 @@ const signUpUserController = async ({
       user: omitFields(user, "password", "verified"),
     };
   } catch (error) {
-    if((error.message as string).includes("E11000")){
+    if ((error.message as string).includes("E11000")) {
       response.status = 409;
-      response.body = { status: "fail", message: "A user with that email already exists" };
+      response.body = {
+        status: "fail",
+        message: "A user with that email already exists",
+      };
       return;
     }
     response.status = 500;
@@ -78,20 +81,128 @@ const loginUserController = async ({
       return;
     }
 
-    const token = await signJwt({
-      userId: String(userExists._id),
-      expiresIn: config.jwtExpiresIn,
-      secretKey: config.jwtSecret,
+    const accessTokenExpiresIn = new Date(
+      Date.now() + config.accessTokenExpiresIn * 60 * 1000
+    );
+    const refreshTokenExpiresIn = new Date(
+      Date.now() + config.refreshTokenExpiresIn * 60 * 1000
+    );
+
+    const access_token = await signJwt({
+      user_id: String(userExists._id),
+      base64PrivateKeyPem: "accessTokenPrivateKey",
+      expiresIn: accessTokenExpiresIn,
+      issuer: "codevoweb.com",
     });
-    cookies.set("token", token, {
-      expires: new Date(Date.now() + config.jwtExpiresIn * 60 * 1000),
-      maxAge: config.jwtExpiresIn * 60,
+    const refresh_token = await signJwt({
+      user_id: String(userExists._id),
+      base64PrivateKeyPem: "refreshTokenPrivateKey",
+      expiresIn: refreshTokenExpiresIn,
+      issuer: "codevoweb.com",
+    });
+    cookies.set("access_token", access_token, {
+      expires: accessTokenExpiresIn,
+      maxAge: config.accessTokenExpiresIn * 60,
       httpOnly: true,
+      secure: false,
+    });
+    cookies.set("refresh_token", refresh_token, {
+      expires: refreshTokenExpiresIn,
+      maxAge: config.refreshTokenExpiresIn * 60,
+      httpOnly: true,
+      secure: false,
+    });
+    cookies.set("logged_in", "true", {
+      expires: accessTokenExpiresIn,
+      maxAge: config.accessTokenExpiresIn * 60,
+      httpOnly: false,
       secure: false,
     });
 
     response.status = 200;
-    response.body = { status: "success", token };
+    response.body = { status: "success", access_token };
+  } catch (error) {
+    response.status = 500;
+    response.body = { status: "error", message: error.message };
+    return;
+  }
+};
+
+// [...] Refresh Token Controller
+const refreshAccessTokenController = async ({
+  response,
+  cookies,
+}: RouterContext<string>) => {
+  try {
+    const refresh_token = await cookies.get("refresh_token");
+
+    const message = "Could not refresh access token";
+
+    if (!refresh_token) {
+      response.status = 403;
+      response.body = {
+        status: "fail",
+        message,
+      };
+      return;
+    }
+
+    // Validate refresh token
+    const decoded = await verifyJwt<{ sub: string }>({
+      token: refresh_token,
+      base64PublicKeyPem: "refreshTokenPublicKey",
+    });
+
+    if (!decoded) {
+      response.status = 403;
+      response.body = {
+        status: "fail",
+        message,
+      };
+      return;
+    }
+
+    // Check if user still exist
+    const user = await User.findOne({ _id: new ObjectId(decoded.sub) });
+
+    if (!user) {
+      response.status = 403;
+      response.body = {
+        status: "fail",
+        message,
+      };
+      return;
+    }
+
+    const accessTokenExpiresIn = new Date(
+      Date.now() + config.accessTokenExpiresIn * 60 * 1000
+    );
+
+    // Sign new access token
+    const access_token = await signJwt({
+      user_id: String(user._id),
+      issuer: "codevoweb.com",
+      base64PrivateKeyPem: "accessTokenPrivateKey",
+      expiresIn: accessTokenExpiresIn,
+    });
+
+    // 4. Add Cookies
+    cookies.set("access_token", access_token, {
+      expires: accessTokenExpiresIn,
+      maxAge: config.accessTokenExpiresIn * 60,
+      httpOnly: true,
+      secure: false,
+    });
+    cookies.set("logged_in", "true", {
+      expires: new Date(Date.now() + config.accessTokenExpiresIn * 60 * 1000),
+      maxAge: config.accessTokenExpiresIn * 60,
+      httpOnly: false,
+      secure: false,
+    });
+
+    // 5. Send response
+    response.status = 200;
+    response.body = { status: "success", access_token };
   } catch (error) {
     response.status = 500;
     response.body = { status: "error", message: error.message };
@@ -101,7 +212,17 @@ const loginUserController = async ({
 
 // [...] Logout User Controller
 const logoutController = ({ response, cookies }: RouterContext<string>) => {
-  cookies.set("token", "", {
+  cookies.set("access_token", "", {
+    httpOnly: true,
+    secure: false,
+    maxAge: -1,
+  });
+  cookies.set("refresh_token", "", {
+    httpOnly: true,
+    secure: false,
+    maxAge: -1,
+  });
+  cookies.set("logged_in", "", {
     httpOnly: true,
     secure: false,
     maxAge: -1,
@@ -110,4 +231,9 @@ const logoutController = ({ response, cookies }: RouterContext<string>) => {
   response.status = 200;
   response.body = { status: "success" };
 };
-export default { signUpUserController, loginUserController, logoutController };
+export default {
+  signUpUserController,
+  loginUserController,
+  logoutController,
+  refreshAccessTokenController,
+};

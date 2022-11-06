@@ -2,22 +2,21 @@ import { User } from "../models/user.model.ts";
 import { ObjectId } from "../deps.ts";
 import type { Context } from "../deps.ts";
 import { verifyJwt } from "../utils/jwt.ts";
-import config from "../config/default.ts";
 
 const requireUser = async (ctx: Context, next: () => Promise<unknown>) => {
   try {
     const headers: Headers = ctx.request.headers;
     const authorization = headers.get("Authorization");
-    const cookieToken = await ctx.cookies.get("token");
-    let token;
+    const cookieToken = await ctx.cookies.get("access_token");
+    let access_token;
 
     if (authorization) {
-      token = authorization.split(" ")[1];
+      access_token = authorization.split(" ")[1];
     } else if (cookieToken) {
-      token = cookieToken;
+      access_token = cookieToken;
     }
 
-    if (!token) {
+    if (!access_token) {
       ctx.response.status = 401;
       ctx.response.body = {
         status: "fail",
@@ -26,9 +25,21 @@ const requireUser = async (ctx: Context, next: () => Promise<unknown>) => {
       return;
     }
 
-    const decoded = await verifyJwt(token, config.jwtSecret);
+    const decoded = await verifyJwt<{ sub: string }>({
+      token: access_token,
+      base64PublicKeyPem: "accessTokenPublicKey",
+    });
 
-    const userExists = await User.findOne({ _id: new ObjectId(decoded.sub) });
+    if (!decoded) {
+      ctx.response.status = 401;
+      ctx.response.body = {
+        status: "fail",
+        message: "Token is invalid or session has expired",
+      };
+      return;
+    }
+
+    const userExists = await User.findOne({ _id: new ObjectId(decoded?.sub) });
 
     if (!userExists) {
       ctx.response.status = 401;

@@ -1,49 +1,57 @@
-import { create, getNumericDate, Header, Payload, verify } from "../deps.ts";
+import customConfig from "../config/default.ts";
+import { getNumericDate, create, verify } from "../deps.ts";
+import type { Payload, Header } from "../deps.ts";
+import { convertToCryptoKey } from "./convertCryptoKey.ts";
 
-const encoder = new TextEncoder();
-
-async function generateKey(secretKey: string) {
-  const keyBuf = encoder.encode(secretKey);
-  return await crypto.subtle.importKey(
-    "raw",
-    keyBuf,
-    { name: "HMAC", hash: "SHA-256" },
-    true,
-    ["sign", "verify"],
-  );
-}
-
-export async function signJwt({
-  userId,
+export const signJwt = async ({
+  user_id,
+  issuer,
+  base64PrivateKeyPem,
   expiresIn,
-  secretKey,
 }: {
-  userId: string;
-  expiresIn: number;
-  secretKey: string;
-}) {
-  const payload: Payload = {
-    iss: "admin.com",
-    sub: userId,
-    exp: getNumericDate(expiresIn * 60),
-    iat: getNumericDate(new Date()),
-    nbf: getNumericDate(new Date()),
-  };
-
+  user_id: string;
+  issuer: string;
+  base64PrivateKeyPem: "accessTokenPrivateKey" | "refreshTokenPrivateKey";
+  expiresIn: Date;
+}) => {
   const header: Header = {
-    alg: "HS256",
+    alg: "RS256",
+    typ: "JWT",
   };
 
-  const key = await generateKey(secretKey);
+  const nowInSeconds = Math.floor(Date.now() / 1000);
 
-  return create(header, payload, key);
-}
+  const payload: Payload = {
+    iss: issuer,
+    iat: nowInSeconds,
+    exp: getNumericDate(expiresIn),
+    sub: user_id,
+  };
 
-export async function verifyJwt(token: string, secretKey: string) {
+  const crytoPrivateKey = await convertToCryptoKey({
+    pemKey: atob(customConfig[base64PrivateKeyPem]),
+    type: "PRIVATE",
+  });
+
+  return create(header, payload, crytoPrivateKey!);
+};
+
+export const verifyJwt = async <T>({
+  token,
+  base64PublicKeyPem,
+}: {
+  token: string;
+  base64PublicKeyPem: "accessTokenPublicKey" | "refreshTokenPublicKey";
+}): Promise<T | null> => {
   try {
-    const key = await generateKey(secretKey);
-    return await verify(token, key);
+    const crytoPublicKey = await convertToCryptoKey({
+      pemKey: atob(customConfig[base64PublicKeyPem]),
+      type: "PUBLIC",
+    });
+
+    return (await verify(token, crytoPublicKey!)) as T;
   } catch (error) {
-    return error.message;
+    console.log(error);
+    return null;
   }
-}
+};

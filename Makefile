@@ -5,4 +5,4 @@ dev-down:
 	docker-compose down
 
 server:
-	denon run --allow-net --allow-read --allow-write --allow-env src/server.ts
+	denon run --allow-net --allow-read --allow-write --allow-env --unstable src/server.ts
