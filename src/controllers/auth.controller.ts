@@ -104,12 +104,14 @@ const loginUserController = async ({
       issuer: "codevoweb.com",
     });
 
-    await redisClient.set(access_uuid, String(userExists._id), {
-      ex: config.accessTokenExpiresIn * 60,
-    });
-    await redisClient.set(refresh_uuid, String(userExists._id), {
-      ex: config.refreshTokenExpiresIn * 60,
-    });
+    await Promise.all([
+      redisClient.set(access_uuid, String(userExists._id), {
+        ex: config.accessTokenExpiresIn * 60,
+      }),
+      redisClient.set(refresh_uuid, String(userExists._id), {
+        ex: config.refreshTokenExpiresIn * 60,
+      }),
+    ]);
 
     cookies.set("access_token", access_token, {
       expires: accessTokenExpiresIn,

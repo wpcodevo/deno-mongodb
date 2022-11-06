@@ -25,9 +25,19 @@ app.use(
     optionsSuccessStatus: 200,
   })
 );
+
 appRouter.init(app);
 app.use(router.routes());
 app.use(router.allowedMethods());
+
+// app.use(({ request, response }) => {
+//   response.status = 404;
+//   response.body = {
+//     status: "fail",
+//     message: `Route ${request.url} not found`,
+//   };
+//   return;
+// });
 
 app.addEventListener("listen", ({ port, secure }) => {
   console.info(
